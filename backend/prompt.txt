@@ -1,0 +1,27 @@
+I want you to create a smart contract for an nft marketplace.
+
+The smart contract should be written in solidity.
+
+The smart contract should be written in a way that is easy to understand and modify.
+
+The smart contract should be written in a way that is easy to deploy.
+
+The smart contract should be written in a way that is easy to test.
+
+The smart contract should be written in a way that is easy to use.
+
+Create the smartcontract in the contracts folder from hardhat.
+
+Use last version of solidity.
+
+Use openzeppelin library for the nft contract.
+
+Use openzeppelin library for the marketplace contract.
+
+Do gas optimizations.
+
+Do security best practices.
+
+Use TipMyArt.sol erc20 token contract from contracts folder as the payment token.
+
+
