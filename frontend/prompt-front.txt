@@ -1,0 +1,9 @@
+in body.tsx interact with nftmarketplace contract to list nft.
+add a new page to allow users to buy and sell nft.
+use nextjs and shadcn/ui
+use tailwindcss for styling
+use wagmi to interact with blockchain
+use existing rainbowkit integration for wallet connection
+add a search bar to allow users to search for nft by name
+
+
