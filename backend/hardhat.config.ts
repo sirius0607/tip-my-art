@@ -8,7 +8,7 @@ const config: HardhatUserConfig = {
   networks: {
     sepolia: {
       url: process.env.ALCHEMY_TESTNET_RPC_URL,
-      accounts: [process.env.ACCOUNT_PRIVATE_KEY, process.env.ACCOUNT2_PRIVATE_KEY]
+      accounts: [process.env.ACCOUNT_PRIVATE_KEY!, process.env.ACCOUNT2_PRIVATE_KEY!]
     }
   }
 };
