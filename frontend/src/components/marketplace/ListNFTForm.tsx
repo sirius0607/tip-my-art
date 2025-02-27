@@ -1,59 +1,142 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractWrite, useContractRead, useAccount, useTransaction } from 'wagmi';
-import { parseEther } from 'viem';
+import { BaseError, useAccount, useGasPrice, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { ContractFunctionExecutionError, parseEther } from 'viem';
 import { Button } from "../ui/button";
-import { Input } from "../ui/input"; 
+import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { NFT_COLLECTION_ADDRESS, NFT_MARKETPLACE_ADDRESS } from "../../config/contracts";
 import { nftMarketplaceABI, nftCollectionABI } from "../../config/abis";
 import { toast } from "sonner";
+//import NFT from "../../config/NFT.json";
+
 
 export function ListNFTForm() {
   const { address } = useAccount();
   const [tokenId, setTokenId] = useState('');
   const [price, setPrice] = useState('');
 
-  // Approve marketplace to handle NFT
-  const { data: writeApproveData, write: approveMarketplace } = useContractWrite({
+  //const gasPrice = '20000000000'; // 20 Gwei
+  const gasLimit = '1000000'; // 100,000 gas units
+
+  // const marketplaceContract = await hre.ethers.getContractAt('Marketplace', NFT_MARKETPLACE_ADDRESS)
+  // const nftContract = await hre.ethers.getContractAt('NFT', NFT_COLLECTION_ADDRESS)
+
+  const { data: gasPrice } = useGasPrice({
+    chainId: 11155111 // Sepolia chain ID
+  })
+
+  const {
+    data: approveHash,
+    error: approveError,
+    isPending: approveIsPending,
+    writeContract: approveNFT
+  } = useWriteContract();
+
+  const {
+    data: listHash,
+    error: listError,
+    isPending: listIsPending,
+    writeContract: listNFT
+  } = useWriteContract();
+
+  const {
+    data: isApproved,
+    error,
+    isPending
+  } = useReadContract({
     address: NFT_COLLECTION_ADDRESS,
     abi: nftCollectionABI,
-    functionName: 'approve',
-  });
+    functionName: 'isApprovedForAll',
+    args: [address, NFT_MARKETPLACE_ADDRESS],
+  })
 
-  // List NFT on marketplace
-  const { data: writeListData, write: listNFT } = useContractWrite({
-    address: NFT_MARKETPLACE_ADDRESS,
-    abi: nftMarketplaceABI,
-    functionName: 'listNFT',
-  });
+  const { isLoading: isApprovalLoading, isSuccess: isApprovalSuccess } =
+    useWaitForTransactionReceipt({
+      hash: approveHash
+      // onSuccess() {
+      //   listNFT({
+      //     address: NFT_MARKETPLACE_ADDRESS,
+      //     abi: nftMarketplaceABI,
+      //     functionName: 'listNFT',
+      //     args: [NFT_COLLECTION_ADDRESS, BigInt(tokenId), parseEther(price)],
+      //     gas: BigInt(gasLimit)
+      //   });
+      // },
+    });
 
-  // Wait for transactions
-  const { isLoading: isApproving } = useTransaction({
-    hash: writeApproveData?.hash,
-    onSuccess() {
-      listNFT({
-        args: [NFT_COLLECTION_ADDRESS, BigInt(tokenId), parseEther(price)],
-      });
-    },
-  });
-
-  const { isLoading: isListing } = useTransaction({
-    hash: writeListData?.hash,
-    onSuccess() {
-      toast.success('NFT listed successfully!');
-      setTokenId('');
-      setPrice('');
-    },
-  });
+  const { isLoading: isListing, isSuccess: isListingSuccess } =
+    useWaitForTransactionReceipt({
+      hash: listHash,
+      // onSuccess() {
+      //   toast.success('NFT listed successfully!');
+      //   setTokenId('');
+      //   setPrice('');
+      // },
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await approveMarketplace({
-        args: [NFT_MARKETPLACE_ADDRESS, BigInt(tokenId)],
-      });
+      console.log('isApproved:', isApproved);
+      if (!isApproved) {
+
+        try {
+          //const nftContract = new ethers.Contract(data.nftAddress, NFT.abi, signer)
+          //  const approveTx = await nftContract.approve(marketplaceContract.address, nft.tokenId)
+          await approveNFT({
+            address: NFT_COLLECTION_ADDRESS,
+            abi: nftCollectionABI,
+            functionName: 'approve',
+            args: [NFT_MARKETPLACE_ADDRESS, BigInt(tokenId)],
+            //gasPrice
+            gas: BigInt(gasLimit)
+          });
+        } catch (error) {
+          if (error instanceof ContractFunctionExecutionError) {
+            console.error('Insufficient funds for transaction')
+          } else {
+            console.error('Transaction failed:', error)
+          }
+        }
+
+        // Wait for approval transaction
+        await new Promise(resolve => {
+          const interval = setInterval(() => {
+            if (isApprovalSuccess) {
+              console.log('isApprovalSuccess');
+              clearInterval(interval);
+              resolve(true);
+            }
+          }, 1000);
+        });
+
+        console.log('List the NFT on marketplace');
+        // List the NFT
+        await listNFT({
+          address: NFT_MARKETPLACE_ADDRESS,
+          abi: nftMarketplaceABI,
+          functionName: 'listNFT',
+          args: [NFT_COLLECTION_ADDRESS, BigInt(tokenId), parseEther(price)]
+          //gas: BigInt(gasLimit)
+        });
+
+        // Wait for listing transaction
+        await new Promise(resolve => {
+          const interval = setInterval(() => {
+            if (isListingSuccess) {
+              console.log('isListingSuccess');
+              clearInterval(interval);
+              resolve(true);
+            }
+          }, 1000);
+        });
+
+        // const approveTx = await nftContract.approve(marketplaceContract.address, nft.tokenId)
+        // await approveTx.wait()
+      }
+
     } catch (error) {
       toast.error('Error listing NFT');
       console.error(error);
@@ -85,13 +168,19 @@ export function ListNFTForm() {
         />
       </div>
 
-      <Button 
-        type="submit" 
-        disabled={isApproving || isListing}
+      <Button
+        type="submit"
+        disabled={isApprovalLoading || isListing}
         className="w-full"
       >
-        {isApproving ? 'Approving...' : isListing ? 'Listing...' : 'List NFT'}
+        {isApprovalLoading ? 'Approving...' : isListing ? 'Listing...' : 'List NFT'}
       </Button>
+      {approveHash && <div>Tx hash: {approveHash}</div>}
+      {isApprovalSuccess ? 'Approving Sucessful !' : ''}
+      {error && (
+        <div>Error: {(approveError as BaseError).shortMessage || approveError?.message}</div>
+      )}
+        {approveIsPending ? 'Approve pending...' : ''}
     </form>
   );
-} 
+}

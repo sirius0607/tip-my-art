@@ -1,14 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useContractWrite, useTransaction } from 'wagmi';
-import { parseEther } from 'viem';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import { NFT_MARKETPLACE_ADDRESS } from '@/config/contracts';
-import { nftMarketplaceABI } from '@/config/abis';
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface NFTCardProps {
   nft: {
@@ -27,38 +22,13 @@ interface NFTCardProps {
 
 export function NFTCard({ nft }: NFTCardProps) {
   const [isLoading, setIsLoading] = useState(false);
-
-  const { write: buyNFT, data: buyData } = useContractWrite({
-    address: NFT_MARKETPLACE_ADDRESS,
-    abi: nftMarketplaceABI,
-    functionName: 'buyNFT',
-  });
-
-  useTransaction({
-    hash: buyData?.hash,
-    onSuccess() {
-      toast.success('NFT purchased successfully!');
-      setIsLoading(false);
-    },
-    onError() {
-      toast.error('Error purchasing NFT');
-      setIsLoading(false);
-    },
-  });
-
+ 
   const handleBuy = async () => {
     setIsLoading(true);
-    try {
-      await buyNFT({
-        args: [nft.tokenId, parseEther(nft.price)],
-      });
-    } catch (error) {
-      toast.error('Error purchasing NFT');
-      setIsLoading(false);
-    }
   };
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>{nft.name}</CardTitle>
@@ -88,5 +58,6 @@ export function NFTCard({ nft }: NFTCardProps) {
         )}
       </CardFooter>
     </Card>
+    </>
   );
 } 
