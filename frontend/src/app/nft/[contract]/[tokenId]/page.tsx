@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Alchemy, Network } from 'alchemy-sdk';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -13,26 +13,171 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useContractWrite, usePrepareContractWrite, useTransaction, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { nftCollectionABI, nftMarketplaceABI } from '@/config/abis';
+import { NFT_COLLECTION_ADDRESS, NFT_MARKETPLACE_ADDRESS } from '@/config/contracts';
+import { parseEther } from 'viem';
 
 const configSepolia = {
-  apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_SEPOLIA,
+  apiKey: process.env.ALCHEMY_API_KEY_SEPOLIA,
   network: Network.ETH_SEPOLIA,
 };
 
 const alchemy = new Alchemy(configSepolia);
 
-export default function NFTDetailPage() {
-  const params = useParams();
+export default function NFTDetailPage({ params }: { params: { contract: string, tokenId: string } }) {
+  const { contract, tokenId } =  params;
   const router = useRouter();
   const [nft, setNft] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const gasPrice = '20000000000'; // 20 Gwei
+  const gasLimit = '100000'; // 100,000 gas units
+
+  // const { config } = usePrepareContractWrite({
+  //   address: 'YOUR_MARKETPLACE_CONTRACT_ADDRESS', // Replace with your contract address
+  //   abi: nftMarketplaceABI,
+  //   functionName: 'listNFT',
+  //   args: [params.contract, params.tokenId, nft?.price], // Adjust the args as necessary
+  // });
+
+  // const { write: listNFT } = useContractWrite(config);
+  //const { writeContract } = useWriteContract()
+
+
+  // Approve NFT for marketplace
+  // const { write: approveNft, data: approvalData } = useContractWrite({
+  //   address: NFT_CONTRACT_ADDRESS,
+  //   abi: NftCollectionABI,
+  //   functionName: 'setApprovalForAll',
+  // });
+
+  // // List NFT on marketplace
+  // const { write: listNft, data: listingData } = useContractWrite({
+  //   address: MARKETPLACE_CONTRACT_ADDRESS,
+  //   abi: NftMarketplaceABI,
+  //   functionName: 'listItem',
+  // });
+
+  // // Wait for transactions
+  // const { isLoading: isApprovalLoading, isSuccess: isApprovalSuccess } = 
+  //   useWaitForTransaction({
+  //     hash: approvalData?.hash,
+  //   });
+
+  // const { isLoading: isListingLoading, isSuccess: isListingSuccess } = 
+  //   useWaitForTransaction({
+  //     hash: listingData?.hash,
+  //   });
+
+
+  const { 
+    data: approveHash,
+    approveError,
+    approveIsPending, 
+    writeContract: approveNFT 
+  } = useWriteContract() 
+
+  const { 
+    data:  publishHash,
+    publishError,
+    publishIsPending, 
+    writeContract: publishNFT
+  } = useWriteContract()
+
+     // Wait for approval transaction
+    //await useWaitForTransactionReceipt({ hash: approveHash })
+    const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: approveHash,
+    })
+
+      // Wait for listNft transaction
+    const { isLoading: isPublishConfirming, isSuccess: isPublishConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: publishHash,
+    })
+
+  //const { writeContract: approveNFT } = useWriteContract()
+
+  const handleApproveAndList = async () => {
+
+    const price = '0.1' // Price in ETH
+    // Approve NFT
+    await approveNFT({
+      address: NFT_COLLECTION_ADDRESS,
+      abi: nftCollectionABI,
+      functionName: 'approve',
+      args: [NFT_MARKETPLACE_ADDRESS, tokenId],
+      overrides: {
+        gasPrice,
+        gasLimit,
+      },
+    })
+
+    // List NFT
+    await publishNFT({
+      address: NFT_MARKETPLACE_ADDRESS,
+      abi: nftMarketplaceABI,
+      functionName: 'listNFT',
+      args: [NFT_COLLECTION_ADDRESS, tokenId, parseEther(price)],
+    })
+  }
+
+  // const { data: hash, isPending, writeContract } = useWriteContract()
+
+  // const { isLoading: isConfirming, isSuccess: isConfirmed } =
+  //   useWaitForTransactionReceipt({
+  //     hash,
+  //   })
+
+  // writeContract({
+  //   address: NFT_COLLECTION_ADDRESS,
+  //   abi: nftCollectionABI,
+  //   functionName: 'approve',
+  //   args: [NFT_MARKETPLACE_ADDRESS, BigInt(tokenId)],
+  // })
+
+
+  //   // Approve marketplace to handle NFT
+  //   const { data: writeApproveData, write: approveMarketplace } = useContractWrite({
+  //     address: NFT_COLLECTION_ADDRESS,
+  //     abi: nftCollectionABI,
+  //     functionName: 'approve',
+  //   });
+  
+  //   // List NFT on marketplace
+  //   const { data: writeListData, write: listNFT } = useContractWrite({
+  //     address: NFT_MARKETPLACE_ADDRESS,
+  //     abi: nftMarketplaceABI,
+  //     functionName: 'listNFT',
+  //   });
+  
+  //   // Wait for transactions
+  //   const { isLoading: isApproving } = useTransaction({
+  //     hash: writeApproveData?.hash,
+  //     onSuccess() {
+  //       listNFT({
+  //         args: [NFT_COLLECTION_ADDRESS, BigInt(tokenId), parseEther(price)],
+  //       });
+  //     },
+  //   });
+  
+  //   const { isLoading: isListing } = useTransaction({
+  //     hash: writeListData?.hash,
+  //     onSuccess() {
+  //       toast.success('NFT listed successfully!');
+  //       setTokenId('');
+  //       setPrice('');
+  //     },
+  //   });
 
   useEffect(() => {
     async function fetchNFT() {
       try {
         const data = await alchemy.nft.getNftMetadata(
-          params.contract as string,
-          params.tokenId as string
+          await params.contract as string,
+          await params.tokenId as string
         );
         setNft(data);
         console.log('NFT Data:', data); // For debugging
@@ -52,6 +197,7 @@ export default function NFTDetailPage() {
   if (!nft) return <div>NFT not found</div>;
 
   return (
+    <>
     <div className="container mx-auto px-4 py-8">
       <Button 
         variant="ghost" 
@@ -120,6 +266,16 @@ export default function NFTDetailPage() {
           </div>
         </div>
       </div>
+      <div className="flex justify-end mt-6">
+        <Button 
+          variant="primary" 
+          onClick={() => handleApproveAndList?.()}
+          className="flex items-center gap-2"
+        >
+          Publish
+        </Button>
+      </div>
     </div>
+    </>
   );
-} 
+}
