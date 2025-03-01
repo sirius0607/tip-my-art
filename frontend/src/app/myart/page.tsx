@@ -1,5 +1,23 @@
+'use client';
+
+import { NFTList } from "@/components/marketplace/NFTList";
+import { SearchBar } from "@/components/marketplace/SearchBar";
+import { useState } from "react";
+import { useAccount } from "wagmi";
+
 export default function Page() {
+
+    const { isConnected } = useAccount();
+    const [searchTerm, setSearchTerm] = useState('');
+    
     return (
-        <div>my art</div>
+        <div>
+              <SearchBar onSearch={setSearchTerm} />
+            {isConnected ? (
+            <NFTList searchTerm={searchTerm} ownerOnly />
+            ) : (
+            <p className="text-center py-8">Please connect your wallet to view your NFTs</p>
+            )}
+        </div>
     );
 }
