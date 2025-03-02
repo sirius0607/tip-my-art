@@ -4,6 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
+import { ModeToggle } from "@/components/ModeToggle"
 
 const Header = () => {
 
@@ -26,7 +27,10 @@ const Header = () => {
           <a href="/art" className="hover:underline">Art</a>
           <a href="/marketplace" className="hover:underline">Marketplace</a>
         </nav>
-        <ConnectButton />
+        <div className="flex items-center space-x-4">
+            <ModeToggle />
+            <ConnectButton />
+          </div>
       </div>
       {mobileMenuOpen && (
         <nav className="md:hidden border-t p-4">
