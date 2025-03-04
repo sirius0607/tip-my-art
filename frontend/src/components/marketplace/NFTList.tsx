@@ -3,7 +3,7 @@
 import { nftGalleryABI } from '@/config/abis';
 import { NFT_GALLERY_ADDRESS_SEPOLIA } from '@/config/contracts';
 import { GalleryItem } from '@/types/GalleryItem';
-import { Alchemy, Network } from 'alchemy-sdk';
+import { Alchemy, Network, Nft } from 'alchemy-sdk';
 import { useEffect, useState } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { NFTCard } from './NFTCard';
@@ -22,9 +22,10 @@ interface NFTListProps {
 
 export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
   const { address } = useAccount();
-  const [tokenDataObjects, setTokenDataObjects] = useState<any[]>([]);
+  const [tokenDataObjects, setTokenDataObjects] = useState<Nft[]>([]);
   const [hasQueried, setHasQueried] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [from, setFrom] = useState('');
 
   const {
     data: items,
@@ -42,14 +43,17 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
     try {
       setIsLoading(true);
       const data = await alchemy.nft.getNftsForOwner(ownerAddress);
-      console.log('NFTs data:', data);
+      //console.log('NFTs data:', data);
 
       const tokenDataPromises = data.ownedNfts.map((nft) =>
         alchemy.nft.getNftMetadata(nft.contract.address, nft.tokenId)
       );
 
-      setTokenDataObjects(await Promise.all(tokenDataPromises));
+      const tokenDataObjectsArray = await Promise.all(tokenDataPromises);
+      //console.log('Token data objects:', tokenDataObjectsArray);
+      setTokenDataObjects(tokenDataObjectsArray);
       setHasQueried(true);
+      setFrom('wallet');
     } catch (error) {
       console.error('Error fetching NFTs:', error);
     } finally {
@@ -70,8 +74,11 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
           alchemy.nft.getNftMetadata(item.nftContract, item.tokenId)
         );
 
-        setTokenDataObjects(await Promise.all(tokenDataPromises));
+        const tokenDataObjectsArray = await Promise.all(tokenDataPromises);
+        console.log('Token data objects:', tokenDataObjectsArray);
+        setTokenDataObjects(tokenDataObjectsArray);
         setHasQueried(true);
+        setFrom('gallery');
       }
     } catch (error) {
       console.error('Error fetching gallery items:', error);
@@ -93,7 +100,7 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
   }, [address, items]);
 
   const filteredNFTs = tokenDataObjects.filter(nft =>
-    nft.name.toLowerCase().includes(searchTerm.toLowerCase())
+    nft.name!.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) return <div>Loading...</div>;
@@ -104,6 +111,8 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
         <NFTCard
           key={`${nft.contract.address}-${nft.tokenId}`}
           nft={nft}
+          item={items.find((item) => item.tokenId === BigInt(nft.tokenId))}
+          from={from}
         />
       ))}
     </div>

@@ -2,27 +2,38 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { GalleryItem } from "@/types/GalleryItem";
+import { Nft } from "alchemy-sdk";
 import Link from 'next/link';
 import { useState } from 'react';
+import { formatEther } from "viem";
 
+// interface NFTCardProps {
+//   nft: {
+//     tokenId: string;
+//     name: string;
+//     image: string;
+//     description?: string;
+//     price: string;
+//     seller: string;
+//     isListed: boolean;
+//     contract?: {
+//       address: string;
+//     };
+//   };
+// }
 interface NFTCardProps {
-  nft: {
-    tokenId: string;
-    name: string;
-    image: string;
-    description?: string;
-    price: string;
-    seller: string;
-    isListed: boolean;
-    contract?: {
-      address: string;
-    };
-  };
+  nft: Nft;
+  from: string;
+  item: GalleryItem;
 }
 
-export function NFTCard({ nft }: NFTCardProps) {
+export function NFTCard(NFTCard: NFTCardProps) {
   const [isLoading, setIsLoading] = useState(false);
- 
+ const nft: Nft = NFTCard.nft;
+ const item: GalleryItem = NFTCard.item;
+ const totalTips = item?.totalTips ? formatEther(item.totalTips) : '0';
+
   const handleBuy = async () => {
     setIsLoading(true);
   };
@@ -35,7 +46,7 @@ export function NFTCard({ nft }: NFTCardProps) {
       </CardHeader>
       <CardContent>
         <Link 
-          href={`/nft/${nft.contract?.address}/${nft.tokenId}`}
+          href={`/nft/${nft.contract?.address}/${nft.tokenId}/${NFTCard.from}`}
           className="block hover:opacity-90 transition-opacity"
         >
           <img 
@@ -44,7 +55,7 @@ export function NFTCard({ nft }: NFTCardProps) {
             className="w-full h-48 object-cover rounded-md cursor-pointer"
           />
         </Link>
-        <p className="mt-4">Tip: {nft.price ? nft.price : '0'} TMA</p>
+        <p className="mt-4">Tip: {totalTips} TMA</p>
       </CardContent>
       <CardFooter>
         {nft.isListed && (
