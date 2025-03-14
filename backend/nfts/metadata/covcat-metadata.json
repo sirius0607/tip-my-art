@@ -1,0 +1,26 @@
+{
+    "attributes" :  [
+        {
+            "trait_type": "Cuteness",
+            "value": "80",
+            "display_type": "boost_percentage"
+        },
+        {
+            "trait_type": "Speed",
+            "value": "15",
+            "display_type": "boost_percentage"
+        },
+        {
+            "trait_type": "Strength",
+            "value": "5",
+            "display_type": "boost_percentage"
+        },
+        {
+            "trait_type": "Accessories",
+            "value": "Bow"
+        }
+        ],
+    "description" : "Undercover cat. It dress like a dog to infiltrate the dog's world.",
+    "image" : "https://ipfs.io/ipfs/QmWpoV5wBd2ihQ8zvtg1P9LjTMdc1MQPGY3DB5u4FdwTYm",
+    "name" : "Undercover Cat"
+    }
