@@ -14,8 +14,8 @@ contract TipMyArt is ERC20, ERC20Burnable, Ownable, ERC20Permit {
         Ownable(msg.sender)
         ERC20Permit("TipMyArt")
     {
-         // decimals() = 10 ** 18
-          uint _initial_supply = 1000000 * 10 ** decimals();
+         // decimals() = 10 ** 18 (standard decimals for tokens)
+          uint _initial_supply = 1_000_000 * 10 ** decimals();
          _mint(msg.sender, _initial_supply);
     }
 
