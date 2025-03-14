@@ -182,16 +182,16 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
     <>
       {isListingSuccess ? 'Listing successful!' : ''}
       {isListing ? 'Listing...' : ''}
-      {listError && (
+      {/* {listError && (
       <div>Error: {(listError as BaseError).shortMessage || listError?.message}</div>
-      )}
+      )} */}
       {listIsPending ? 'Listing pending...' : ''}
 
       {isTippingSuccess ? 'Tip successful!' : ''}
       {isTippingLoading ? 'Creator tipped!' : ''}
-      {tipError && (
+      {/* {tipError && (
       <div>Error: {(tipError as BaseError).shortMessage || tipError?.message}</div>
-      )}
+      )} */}
       {tipIsPending ? 'Tipping pending...' : ''}
 
       <div className="container mx-auto px-4 py-8">

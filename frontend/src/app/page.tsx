@@ -1,7 +1,7 @@
 'use client';
 
-import { NFTList } from "@/components/marketplace/NFTList";
-import { SearchBar } from "@/components/marketplace/SearchBar";
+import { NFTList } from "@/components/gallery/NFTList";
+import { SearchBar } from "@/components/gallery/SearchBar";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
