@@ -3,13 +3,23 @@
 import { Button } from '@/components/ui/button';
 import { airdropABI } from '@/config/abis';
 import { AIRDROP_CONTRACT_ADDRESS_SEPOLIA } from '@/config/contracts';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 export default function AirdropPage() {
   const { address, isConnected } = useAccount();
-  const [isClaiming, setIsClaiming] = useState(false);
+
+  // Read if user has already claimed
+  const { data: hasClaimed } = useReadContract({
+    address: AIRDROP_CONTRACT_ADDRESS_SEPOLIA,
+    abi: airdropABI,
+    functionName: 'hasClaimed',
+    args: [address || '0x'],
+    query: {
+      enabled: !!address,
+    }
+  });
 
   const {
     data: claimHash,
@@ -18,7 +28,7 @@ export default function AirdropPage() {
     writeContract: claimTokens
   } = useWriteContract();
 
-  const { isLoading: isClaimingLoading, isSuccess: isClaimingSuccess } =
+  const { isLoading: isClaimingLoading, isSuccess: isClaimingSuccess, error: claimingError } =
     useWaitForTransactionReceipt({
       hash: claimHash
     });
@@ -29,20 +39,23 @@ export default function AirdropPage() {
       return;
     }
 
-    setIsClaiming(true);
-    try {
-      await claimTokens({
-        address: AIRDROP_CONTRACT_ADDRESS_SEPOLIA,
-        abi: airdropABI,
-        functionName: 'claim'
-      });
-    } catch (error) {
-      toast.error('Error claiming tokens');
-      console.error(error);
-    } finally {
-      setIsClaiming(false);
-    }
+    await claimTokens({
+      address: AIRDROP_CONTRACT_ADDRESS_SEPOLIA,
+      abi: airdropABI,
+      functionName: 'claim'
+    });
   };
+
+  // Error handling effect
+  useEffect(() => {
+    if (claimingError) {
+      const reason = claimingError.message.includes('Already claimed')
+        ? 'You have already claimed your tokens!'
+        : claimingError.message;
+      //setErrorMessage(reason);
+      console.log(reason);
+    }
+  }, [claimingError]);
 
   return (
     <div className="container mx-auto px-4 py-8 pb-12">
@@ -52,15 +65,18 @@ export default function AirdropPage() {
         <Button
           variant="ghost"
           onClick={handleClaim}
-          disabled={isClaiming || isClaimingLoading}
+          disabled={isClaimingLoading || hasClaimed}
           className="w-48 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500 transition-colors"
         >
-          {isClaiming || isClaimingLoading ? 'Claiming...' : 'Claim TMA Tokens'}
+          {isClaimingLoading ? 'Claiming...' : 'Claim TMA Tokens'}
         </Button>
       </div>
-      {claimError && (
+      {Boolean(hasClaimed) && (
+        <div className="mt-4 text-red-500 text-center">You&apos;ve already claimed your tokens!</div>
+      )}
+      {claimingError && (
         <div className="mt-4 text-red-500 text-center">
-          Error: {claimError.message}
+          Error: {claimingError.message}
         </div>
       )}
       {isClaimingSuccess && (
