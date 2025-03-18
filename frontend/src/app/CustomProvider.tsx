@@ -22,10 +22,10 @@ const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: '11e1e799fae1f4920bc9747337aba7ae',
   chains: [sepolia],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
+  // transports: {
+  //   [mainnet.id]: http(),
+  //   [sepolia.id]: http(),
+  // },
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
