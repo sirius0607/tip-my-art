@@ -1,0 +1,23 @@
+{
+    "attributes" :  [
+        {
+            "trait_type": "Population",
+            "value": "1500000"
+        },
+        {
+            "trait_type": "Superficies",
+            "value": "100"
+        },
+        {
+            "trait_type": "Planet",
+            "value": "Moon"
+        },
+        {
+            "trait_type": "Eco",
+            "value": "Yes"
+        }
+        ],
+    "description" : "Eco city on the moon.",
+    "image" : "https://visible-sapphire-turkey.myfilebase.com/ipfs/QmVptb2Z6z1pXsL5v2ym4awbVZUSEw29st3sVhmwciRY9m",
+    "name" : "Luna1"
+    }

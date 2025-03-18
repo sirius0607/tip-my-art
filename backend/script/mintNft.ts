@@ -17,7 +17,8 @@ async function main() {
     // Mint covcat NFT for AccountBlast
     // https://visible-sapphire-turkey.myfilebase.com/ipfs/QmT663BFXG5LSVy6JvvUUfCVmzjSuSSq5whuZBeE6crDio
     //const tokenId = await mintNft(nftCollection, await signer0.getAddress(), "https://ipfs.io/ipfs/QmT663BFXG5LSVy6JvvUUfCVmzjSuSSq5whuZBeE6crDio");
-    const tokenId = await mintNft(nftCollection, await signer0.getAddress(), "https://visible-sapphire-turkey.myfilebase.com/ipfs/QmT663BFXG5LSVy6JvvUUfCVmzjSuSSq5whuZBeE6crDio");
+    //const tokenId = await mintNft(nftCollection, await signer0.getAddress(), "https://visible-sapphire-turkey.myfilebase.com/ipfs/QmT663BFXG5LSVy6JvvUUfCVmzjSuSSq5whuZBeE6crDio");
+    const tokenId = await mintNft(nftCollection, await signer0.getAddress(), "https://visible-sapphire-turkey.myfilebase.com/ipfs/QmaXfvAvBsHmKR5H7KZzjghKjVznEPYEX8kBrutboYoy8j");
     console.log('Minted Token ID:', tokenId);
   } catch (error) {
     console.error('Error in main function:', error);

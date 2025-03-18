@@ -67,7 +67,6 @@ async function main() {
 
 
   // Approve NFT Gallery to spend creator's erc721 token
-  // const approveTx = await nftCollection.connect(creator).approve(await nftGallery.getAddress(), tokenId);
   // List NFT in Gallery
   await nftGallery.connect(creator1).listItem(
     await nftCollection.getAddress(),
@@ -75,7 +74,6 @@ async function main() {
   );
 
   // Approve NFT Gallery to spend creator's erc721 token
-  // const approveTx = await nftCollection.connect(creator).approve(await nftGallery.getAddress(), tokenId);
   // List NFT in Gallery
   await nftGallery.connect(creator2).listItem(
     await nftCollection.getAddress(),
@@ -84,6 +82,7 @@ async function main() {
 
   // 10*10**18
   const TIP_AMOUNT = ethers.parseEther("10");
+   // 50*10**18
   const TIP_AMOUNT2 = ethers.parseEther("50");
   console.log('TIP_AMOUNT: ', ethers.formatEther(TIP_AMOUNT));
   console.log('TIP_AMOUNT2: ', ethers.formatEther(TIP_AMOUNT2));
@@ -164,6 +163,16 @@ async function main() {
   // unlist nft from gallery
   console.log('Unlist nft from gallery', itemCreator1.itemId);
   await nftGallery.connect(creator1).removeItem(itemCreator1.itemId.toString());
+
+    // get item by nft contract and token id
+    console.log('Get item by nft contract and token id', await nftCollection.getAddress(), tokenId);
+    const itemDeleted: GalleryItem = await nftGallery.connect(creator1).getItem(nftCollection, tokenId);
+    console.log('item.itemId: ' + itemDeleted.itemId);
+    console.log('itemDeleted.creator: ' + itemDeleted.creator);
+    console.log('itemDeleted.nftContract: ' + itemDeleted.nftContract);
+    console.log('itemDeleted.tokenId: ' + itemDeleted.tokenId);
+    console.log('itemDeleted.totalTips: ' + ethers.formatEther(itemDeleted.totalTips.toString()));
+    console.log('itemDeleted.status: ' + itemDeleted.status);
 
   // Get all items from NFT Gallery
   console.log('Get all items from NFT Gallery');
