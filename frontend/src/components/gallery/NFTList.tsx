@@ -50,7 +50,7 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
       );
 
       const tokenDataObjectsArray = await Promise.all(tokenDataPromises);
-      //console.log('Token data objects:', tokenDataObjectsArray);
+      console.log('Creator nfts:', tokenDataObjectsArray);
       setTokenDataObjects(tokenDataObjectsArray);
       setHasQueried(true);
       setFrom('wallet');
@@ -75,7 +75,7 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
         );
 
         const tokenDataObjectsArray = await Promise.all(tokenDataPromises);
-        console.log('Token data objects:', tokenDataObjectsArray);
+        //console.log('Token data objects:', tokenDataObjectsArray);
         setTokenDataObjects(tokenDataObjectsArray);
         setHasQueried(true);
         setFrom('gallery');
@@ -111,7 +111,7 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
         <NFTCard
           key={`${nft.contract.address}-${nft.tokenId}`}
           nft={nft}
-          item={items.find((item) => item.tokenId === BigInt(nft.tokenId))}
+          item={items.find((item) => item.nftContract === nft.contract.address && item.tokenId === BigInt(nft.tokenId))}
           from={from}
         />
       ))}

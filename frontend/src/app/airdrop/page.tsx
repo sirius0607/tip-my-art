@@ -48,11 +48,16 @@ export default function AirdropPage() {
 
   // Error handling effect
   useEffect(() => {
+    if (isClaimingSuccess) {
+      toast.success('Tokens claimed successfully!');
+    }
+  }, [isClaimingSuccess]);
+
+  useEffect(() => {
     if (claimingError) {
       const reason = claimingError.message.includes('Already claimed')
         ? 'You have already claimed your tokens!'
         : claimingError.message;
-      //setErrorMessage(reason);
       console.log(reason);
     }
   }, [claimingError]);
@@ -80,9 +85,11 @@ export default function AirdropPage() {
         </div>
       )}
       {isClaimingSuccess && (
-        <div className="mt-4 text-green-500 text-center">
-          Tokens claimed successfully!
-        </div>
+        <>
+          <div className="mt-4 text-green-500 text-center">
+            Tokens claimed successfully!
+          </div>
+        </>
       )}
     </div>
   );

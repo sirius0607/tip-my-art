@@ -28,10 +28,10 @@ interface NFTCardProps {
   item: GalleryItem;
 }
 
-export function NFTCard(NFTCard: NFTCardProps) {
+export function NFTCard(nFTCard: NFTCardProps) {
   const [isLoading, setIsLoading] = useState(false);
- const nft: Nft = NFTCard.nft;
- const item: GalleryItem = NFTCard.item;
+ const nft: Nft = nFTCard.nft;
+ const item: GalleryItem = nFTCard.item;
  const totalTips = item?.totalTips ? formatEther(item.totalTips) : '0';
 
   const handleBuy = async () => {
@@ -47,11 +47,11 @@ export function NFTCard(NFTCard: NFTCardProps) {
       </CardHeader>
       <CardContent>
         <Link 
-          href={`/nft/${nft.contract?.address}/${nft.tokenId}/${NFTCard.from}`}
+          href={`/nft/${nft.contract?.address}/${nft.tokenId}/${nFTCard.from}`}
           className="block hover:opacity-90 transition-opacity"
         >
-          <img 
-            src={nft.image.originalUrl} 
+          <img
+            src={nft.image.originalUrl}
             alt={nft.name}
             className="w-full h-48 object-cover rounded-md cursor-pointer"
           />

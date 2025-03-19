@@ -50,10 +50,10 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
     address: NFT_GALLERY_ADDRESS_SEPOLIA,
     abi: nftGalleryABI,
     functionName: 'getItem',
-    args: [contract, tokenId],
-    query: {
-      enabled: false // Disable automatic fetching
-    }
+    args: [contract, tokenId]
+    // query: {
+    //   enabled: from ==='gallery' // Disable automatic fetching if not from gallery
+    // }
   }) as { data: GalleryItem; error: ContractFunctionExecutionError ,isPending: boolean; isError: boolean };
 
   const {
@@ -203,7 +203,7 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
     console.log('get item error: ', causeReverted?.reason);
     if(causeReverted?.reason) {
       setItemUnpublished(true);
-      toast.error(causeReverted?.reason);
+      //toast.error(causeReverted?.reason);
     }
   }, [itemError]);
 
@@ -245,9 +245,9 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
       {errorTipping && (
       <div>Error: {(errorTipping as BaseError).shortMessage || errorTipping?.message}</div>
       )}
-      {itemError && (
+      {/* {itemError && (
       <div>Error: {(itemError as BaseError).shortMessage || itemError?.message}</div>
-      )}
+      )} */}
       {/* {listIsPending ? 'Listing pending...' : ''} */}
 
       {/* {isTippingSuccess ? 'Tip successful!' : ''}
@@ -337,7 +337,7 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
                       <p className="text-gray-600">{nft.description}</p>
                     </div>
                   )}
-                  <p><span className="font-medium">Tip amount:</span> {item?.totalTips ? formatEther(item.totalTips) : '0'} TMA</p>
+                  <p><span className="font-medium">Tip amount:</span> {item?.totalTips && !itemUnpublished ? formatEther(item.totalTips) : '0'} TMA</p>
                   {from === 'gallery' && (
                     <p><span className="font-medium">Plateform fee:</span> {Number(platformFeePercent) / 100} %</p>
                   )}
