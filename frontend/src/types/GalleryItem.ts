@@ -5,4 +5,5 @@ export interface GalleryItem {
     tokenId: bigint;
     totalTips: bigint;
     status: bigint;
+    listingDate: bigint;
 }

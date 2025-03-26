@@ -15,6 +15,7 @@ interface GalleryItem {
   tokenId: BigInt;
   totalTips: BigInt;
   status: BigInt;
+  listingDate: bigint;
 }
 
 async function mintNft(nftCollection: any, creatorAddress: string, metadataUrl: string) {
@@ -137,7 +138,7 @@ async function main() {
     console.log('item.tokenId: ' + item.tokenId);
     console.log('item.totalTips: ' + ethers.formatEther(item.totalTips));
     console.log('item.status: ' + item.status);
-
+    console.log('item.listingDate: ' + new Date(Number(item.listingDate)).toISOString());
   });
 
   // get item by nft contract and token id
@@ -149,6 +150,7 @@ async function main() {
   console.log('item.tokenId: ' + item.tokenId);
   console.log('item.totalTips: ' + ethers.formatEther(item.totalTips.toString()));
   console.log('item.status: ' + item.status);
+  console.log('item.listingDate: ' + new Date(Number(item.listingDate)).toISOString());
 
   // get item by nft contract and token id
   console.log('Get item by nft contract and token id', await nftCollection.getAddress(), tokenId);
@@ -159,6 +161,7 @@ async function main() {
   console.log('item.tokenId: ' + itemCreator1.tokenId);
   console.log('item.totalTips: ' + ethers.formatEther(itemCreator1.totalTips.toString()));
   console.log('item.status: ' + itemCreator1.status);
+  console.log('item.listingDate: ' + new Date(Number(item.listingDate)).toISOString());
 
   // unlist nft from gallery
   console.log('Unlist nft from gallery', itemCreator1.itemId);
@@ -166,13 +169,19 @@ async function main() {
 
     // get item by nft contract and token id
     console.log('Get item by nft contract and token id', await nftCollection.getAddress(), tokenId);
-    const itemDeleted: GalleryItem = await nftGallery.connect(creator1).getItem(nftCollection, tokenId);
+    let itemDeleted!: GalleryItem;
+    try {
+    itemDeleted = await nftGallery.connect(creator1).getItem(nftCollection, tokenId);
+    } catch (error) {
+      console.error('Error getting item:', error);
+    }
     console.log('item.itemId: ' + itemDeleted.itemId);
     console.log('itemDeleted.creator: ' + itemDeleted.creator);
     console.log('itemDeleted.nftContract: ' + itemDeleted.nftContract);
     console.log('itemDeleted.tokenId: ' + itemDeleted.tokenId);
     console.log('itemDeleted.totalTips: ' + ethers.formatEther(itemDeleted.totalTips.toString()));
     console.log('itemDeleted.status: ' + itemDeleted.status);
+    console.log('itemDeleted.listingDate: ' + new Date(Number(item.listingDate)).toISOString());
 
   // Get all items from NFT Gallery
   console.log('Get all items from NFT Gallery');
@@ -184,6 +193,7 @@ async function main() {
     console.log('item.tokenId: ' + item.tokenId);
     console.log('item.totalTips: ' + ethers.formatEther(item.totalTips));
     console.log('item.status: ' + item.status);
+    console.log('item.listingDate: ' + new Date(Number(item.listingDate)).toISOString());
 
   });
 }

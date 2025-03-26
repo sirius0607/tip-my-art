@@ -18,6 +18,7 @@ contract NftGallery is Ownable, ReentrancyGuard {
         uint256 tokenId;
         uint256 totalTips;
         ListingStatus status;
+        uint256 listingDate;
     }
 
     uint256 private _itemCounter = 0;
@@ -36,7 +37,8 @@ contract NftGallery is Ownable, ReentrancyGuard {
         uint256 itemId,
         address creator,
         address nftContract,
-        uint256 tokenId
+        uint256 tokenId,
+        uint256 listingDate
     );
 
     event ItemTipped(
@@ -57,11 +59,6 @@ contract NftGallery is Ownable, ReentrancyGuard {
 
     function listItem(address nftContract, uint256 tokenId) external nonReentrant {
         require(IERC721(nftContract).ownerOf(tokenId) == msg.sender, "Not NFT owner");
-        // require(
-        //     IERC721(nftContract).getApproved(tokenId) == address(this) ||
-        //     IERC721(nftContract).isApprovedForAll(msg.sender, address(this)),
-        //     "Gallery not approved"
-        // );
         require(_nftToItemId[nftContract][tokenId] == 0, "NFT already listed");
 
         _itemCounter++;
@@ -74,11 +71,12 @@ contract NftGallery is Ownable, ReentrancyGuard {
         item.tokenId = tokenId;
         item.status = ListingStatus.Active;
         item.totalTips = 0;
+        item.listingDate = block.timestamp;
 
         _activeItemIds.push(_itemCounter);
         _idToActiveIndex[_itemCounter] = _activeItemIds.length - 1;
 
-        emit ItemListed(_itemCounter, msg.sender, nftContract, tokenId);
+        emit ItemListed(_itemCounter, msg.sender, nftContract, tokenId, item.listingDate);
     }
 
     function tipCreator(address nftContract, uint256 tokenId, uint256 amount) external nonReentrant {
@@ -127,25 +125,11 @@ contract NftGallery is Ownable, ReentrancyGuard {
         emit ItemRemoved(itemId);
     }
 
-    // function getItem(address nftContract, uint256 tokenId) external view returns (GalleryItem memory) {
-    //     return _items[_nftToItemId[nftContract][tokenId]];
-    // }
-
     function getItem(address nftContract, uint256 tokenId) external view returns (GalleryItem memory) {
-        // Input validation
-        // require(nftContract != address(0), "Invalid NFT contract");
-        // require(tokenId > 0, "Invalid token ID");
-
-        // Check item existence in mapping
         uint256 itemId = _nftToItemId[nftContract][tokenId];
         require(itemId != 0, "Item not registered");
         
-        // Verify item existence in storage
         GalleryItem memory item = _items[itemId];
-        // require(item.exists, "Item does not exist");
-        // require(item.nftContract == nftContract, "Contract mismatch");
-        // require(item.tokenId == tokenId, "Token ID mismatch");
-
         return item;
     }
 

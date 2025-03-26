@@ -7,6 +7,7 @@ import { Nft } from "alchemy-sdk";
 import Link from 'next/link';
 import { useState } from 'react';
 import { formatEther } from "viem";
+import moment from 'moment';
 
 // interface NFTCardProps {
 //   nft: {
@@ -29,47 +30,37 @@ interface NFTCardProps {
 }
 
 export function NFTCard(nFTCard: NFTCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
- const nft: Nft = nFTCard.nft;
- const item: GalleryItem = nFTCard.item;
- const totalTips = item?.totalTips ? formatEther(item.totalTips) : '0';
-
-  const handleBuy = async () => {
-    setIsLoading(true);
-  };
+  const nft: Nft = nFTCard.nft;
+  const item: GalleryItem = nFTCard.item;
+  const totalTips = item?.totalTips ? formatEther(item.totalTips) : '0';
+  let formattedDate = '';
+  if (item) {
+    const timestamp = Number(item?.listingDate) * 1000;
+    formattedDate = moment(timestamp).format('MMMM Do YYYY, h:mm:ss a');
+  }
 
   return (
     <>
-    <Card>
-      <CardHeader>
-        <CardTitle>{nft.name}</CardTitle>
-        <p className="text-sm text-gray-500">{nft.contract?.name}</p>
-      </CardHeader>
-      <CardContent>
-        <Link 
-          href={`/nft/${nft.contract?.address}/${nft.tokenId}/${nFTCard.from}`}
-          className="block hover:opacity-90 transition-opacity"
-        >
-          <img
-            src={nft.image.originalUrl}
-            alt={nft.name}
-            className="w-full h-48 object-cover rounded-md cursor-pointer"
-          />
-        </Link>
-        <p className="mt-4">Tip: {totalTips} TMA</p>
-      </CardContent>
-      <CardFooter>
-        {nft.isListed && (
-          <Button 
-            onClick={handleBuy} 
-            disabled={isLoading}
-            className="w-full"
+      <Card>
+        <CardHeader>
+          <CardTitle>{nft.name}</CardTitle>
+          <p className="text-sm text-gray-500">{nft.contract?.name}</p>
+          {item && <p className="text-xs text-gray-400">{formattedDate}</p>}
+        </CardHeader>
+        <CardContent>
+          <Link
+            href={`/nft/${nft.contract?.address}/${nft.tokenId}/${nFTCard.from}`}
+            className="block hover:opacity-90 transition-opacity"
           >
-            {isLoading ? 'Processing...' : 'Buy Now'}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+            <img
+              src={nft.image.originalUrl}
+              alt={nft.name}
+              className="w-full h-48 object-cover rounded-md cursor-pointer"
+            />
+          </Link>
+          <p className="mt-4">Tip: {totalTips} TMA</p>
+        </CardContent>
+      </Card>
     </>
   );
 }

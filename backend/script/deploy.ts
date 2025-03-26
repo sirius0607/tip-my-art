@@ -18,12 +18,12 @@ async function main() {
   //const marketplaceAddress: any = process.env[`MARKETPLACE_CONTRACT_ADDRESS_SEPOLIA`];
 
   // redeploy markeplace contract
-  const nftAddress: any = process.env[`NFT_CONTRACT_ADDRESS_SEPOLIA`];
+  //const nftAddress: any = process.env[`NFT_CONTRACT_ADDRESS_SEPOLIA`];
   const tipMyArtTokenAddress: any = process.env[`TIP_MY_ART_TOKEN_ADDRESS`];
 
 
   //const marketplaceContract = await ethers.getContractAt('NFTMarketplace', marketplaceAddress);
-  const nftCollection = await ethers.getContractAt('NFTCollection', nftAddress);
+  //const nftCollection = await ethers.getContractAt('NFTCollection', nftAddress);
   const tipMyArtToken = await ethers.getContractAt("TipMyArt", tipMyArtTokenAddress);
 
   // Deploy NFT Marketplace
@@ -39,8 +39,7 @@ async function main() {
 
   console.log('NftGallery address: ' + await nftGallery.getAddress());
   console.log('TipMyArt address: ' + await tipMyArtToken.getAddress());
-  console.log('NFTCollection address: ' + await nftCollection.getAddress());
-  //console.log('NFTMarketplace address: ' + await nftMarketplace.getAddress());
+  //console.log('NFTCollection address: ' + await nftCollection.getAddress());
 }
 
 main();
