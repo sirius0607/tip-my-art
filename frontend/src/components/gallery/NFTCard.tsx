@@ -1,28 +1,12 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GalleryItem } from "@/types/GalleryItem";
 import { Nft } from "alchemy-sdk";
-import Link from 'next/link';
-import { useState } from 'react';
-import { formatEther } from "viem";
 import moment from 'moment';
+import Link from 'next/link';
+import { formatEther } from "viem";
 
-// interface NFTCardProps {
-//   nft: {
-//     tokenId: string;
-//     name: string;
-//     image: string;
-//     description?: string;
-//     price: string;
-//     seller: string;
-//     isListed: boolean;
-//     contract?: {
-//       address: string;
-//     };
-//   };
-// }
 interface NFTCardProps {
   nft: Nft;
   from: string;
