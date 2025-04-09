@@ -18,7 +18,6 @@ import { Alchemy, Network, Nft } from 'alchemy-sdk';
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { toast } from "sonner";
 import { BaseError, ContractFunctionExecutionError, ContractFunctionRevertedError, formatEther, parseEther } from 'viem';
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
@@ -302,7 +301,7 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
                 ) : (
                   (!item || itemUnpublished ? (
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       onClick={async () => {
                         handleListItem(contract, tokenId);
                       }}
@@ -312,7 +311,7 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
                     </Button>
                   ) : (
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       onClick={async () => {
                         handleUnListItem(item!.itemId);
                       }}

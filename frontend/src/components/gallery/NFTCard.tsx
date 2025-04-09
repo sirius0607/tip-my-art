@@ -10,12 +10,12 @@ import { formatEther } from "viem";
 interface NFTCardProps {
   nft: Nft;
   from: string;
-  item: GalleryItem;
+  item: GalleryItem | undefined;
 }
 
 export function NFTCard(nFTCard: NFTCardProps) {
   const nft: Nft = nFTCard.nft;
-  const item: GalleryItem = nFTCard.item;
+  const item: GalleryItem | undefined = nFTCard.item;
   const totalTips = item?.totalTips ? formatEther(item.totalTips) : '0';
   let formattedDate = '';
   if (item) {

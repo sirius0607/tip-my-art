@@ -68,7 +68,7 @@ export default function AirdropPage() {
       <p className="mb-6 text-center">Claim your free TMA token to tip artists on the website.</p>
       <div className="flex justify-center">
         <Button
-          variant="ghost"
+          variant="secondary"
           onClick={handleClaim}
           disabled={isClaimingLoading || hasClaimed}
           className="w-48 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500 transition-colors"

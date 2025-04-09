@@ -103,7 +103,7 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
     nft.name?.toLowerCase().includes(searchTerm!.toLowerCase())
   );
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return  <div className="text-center py-8">Loading...</div>;
 
   return hasQueried ? (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 py-6">
@@ -111,12 +111,12 @@ export function NFTList({ searchTerm, ownerOnly }: NFTListProps) {
         <NFTCard
           key={`${nft.contract.address}-${nft.tokenId}`}
           nft={nft}
-          item={items.find((item) => item.nftContract === nft.contract.address && item.tokenId === BigInt(nft.tokenId))}
+          item={items?.find((item) => item.nftContract === nft.contract.address && item.tokenId === BigInt(nft.tokenId))}
           from={from}
         />
       ))}
     </div>
   ) : (
-    <div>No NFTs found</div>
+    <div className="text-center py-8">No NFTs found</div>
   );
 }
