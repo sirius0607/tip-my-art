@@ -37,6 +37,9 @@ const Header = () => {
             <Link href="/airdrop" className={`hover:underline ${currentPath === "/airdrop" ? "text-blue-500" : ""}`}>
               Airdrop
             </Link>
+            <Link href="/nft" className={`hover:underline ${currentPath === "/nft" ? "text-blue-500" : ""}`}>
+              Create NFT
+            </Link>
           </nav>
           <div className="flex items-center space-x-4">
             <ModeToggle />
@@ -59,6 +62,11 @@ const Header = () => {
               <li>
                 <Link href="/airdrop" className={`block hover:underline ${currentPath === "/airdrop" ? "text-blue-500" : ""}`}>
                   Airdrop
+                </Link>
+              </li>
+              <li>
+                <Link href="/nft" className={`block hover:underline ${currentPath === "/nft" ? "text-blue-500" : ""}`}>
+                  Create NFT
                 </Link>
               </li>
             </ul>
