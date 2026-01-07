@@ -18,6 +18,7 @@ import { Alchemy, Network, Nft } from 'alchemy-sdk';
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from "sonner";
 import { BaseError, ContractFunctionExecutionError, ContractFunctionRevertedError, formatEther, parseEther } from 'viem';
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
@@ -133,6 +134,12 @@ export default function NFTDetailPage({ params }: { params: Promise<{ contract: 
 
 
   const approveGallery = async () => {
+
+    if(tipAmount === '' || parseFloat(tipAmount) <= 0) {
+      console.warn('Invalid tip amount');
+      toast.error('tip amount must be greater than zero');
+      return;
+    }
     try {
       try {
         console.log(`Approve tipmyart gallery to use ${tipAmount} TMA`);
